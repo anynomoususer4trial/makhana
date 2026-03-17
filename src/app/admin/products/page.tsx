@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Edit2, Trash2, Plus } from "lucide-react";
+import { Edit2, Trash2, Plus, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { PRODUCT_CATEGORIES } from "@/constants/productCategories";
 import Loader from "@/components/Loader";
@@ -80,6 +80,26 @@ export default function AdminProductsPage() {
       }
     } catch (error: any) {
       toast.error("Failed to delete product: " + (error.message || "Unknown error"));
+    }
+  };
+
+  const handleToggleActive = async (id: string, currentActive: boolean) => {
+    try {
+      const res = await fetch(`/api/admin/products?id=${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !currentActive }),
+      });
+
+      if (res.ok) {
+        toast.success(`Product ${currentActive ? "deactivated" : "activated"} successfully!`);
+        fetchProducts(); // Refresh list
+      } else {
+        const error = await res.json();
+        toast.error(error.message || "Failed to update product status");
+      }
+    } catch (error: any) {
+      toast.error("Failed to update product status: " + (error.message || "Unknown error"));
     }
   };
 
@@ -306,12 +326,21 @@ export default function AdminProductsPage() {
                     <Edit2 size={16}/>
                   </Link>
 
-                  <button 
-                    className="p-2 bg-red-50 rounded-lg"
-                    onClick={() => handleDelete(p._id)}
-                  >
-                    <Trash2 size={16} className="text-red-500"/>
-                  </button>
+                  {p.isActive ? (
+                    <button 
+                      className="p-2 bg-red-50 rounded-lg"
+                      onClick={() => handleDelete(p._id)}
+                    >
+                      <Trash2 size={16} className="text-red-500"/>
+                    </button>
+                  ) : (
+                    <button
+                      className="p-2 bg-green-50 rounded-lg"
+                      onClick={() => handleToggleActive(p._id, p.isActive)}
+                    >
+                      <CheckCircle2 size={16} className="text-green-500" />
+                    </button>
+                  )}
                 </td>
 
               </tr>

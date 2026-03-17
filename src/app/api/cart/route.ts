@@ -144,13 +144,19 @@ export async function GET(req: NextRequest) {
 
       return {
 
-        productId: product._id,
+        product: {
 
-        name: product.name,
+          _id: product._id,
 
-        price: product.price,
+          name: product.name,
 
-        image: product.images?.[0],
+          price: product.price,
+
+          images: product.images,
+
+          discountPrice: product.discountPrice
+
+        },
 
         quantity: item.quantity,
 

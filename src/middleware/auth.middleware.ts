@@ -15,7 +15,7 @@ export async function authMiddleware(req: NextRequest) {
       throw new Error("Invalid token");
     }
 
-    return decoded;
+    return decoded as import("@/lib/jwt").JwtPayload;
   } catch (error: any) {
     throw new Error(error.message || "Authentication failed");
   }

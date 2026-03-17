@@ -37,10 +37,15 @@ export async function GET(req: NextRequest) {
     const category = url.searchParams.get("category");
     const status = url.searchParams.get("status");
     const search = url.searchParams.get("search");
-    const minPrice = Number(url.searchParams.get("minPrice"));
-    const maxPrice = Number(url.searchParams.get("maxPrice"));
-    const minStock = Number(url.searchParams.get("minStock"));
-    const maxStock = Number(url.searchParams.get("maxStock"));
+    const minPriceParam = url.searchParams.get("minPrice");
+    const maxPriceParam = url.searchParams.get("maxPrice");
+    const minStockParam = url.searchParams.get("minStock");
+    const maxStockParam = url.searchParams.get("maxStock");
+
+    const minPrice = minPriceParam !== null ? Number(minPriceParam) : undefined;
+    const maxPrice = maxPriceParam !== null ? Number(maxPriceParam) : undefined;
+    const minStock = minStockParam !== null ? Number(minStockParam) : undefined;
+    const maxStock = maxStockParam !== null ? Number(maxStockParam) : undefined;
 
     const query: any = {};
 
@@ -55,17 +60,17 @@ export async function GET(req: NextRequest) {
 
     if (category) query.category = category;
 
-    if (!Number.isNaN(minPrice)) {
+    if (minPrice !== undefined && !Number.isNaN(minPrice)) {
       query.price = { ...(query.price || {}), $gte: minPrice };
     }
-    if (!Number.isNaN(maxPrice)) {
+    if (maxPrice !== undefined && !Number.isNaN(maxPrice)) {
       query.price = { ...(query.price || {}), $lte: maxPrice };
     }
 
-    if (!Number.isNaN(minStock)) {
+    if (minStock !== undefined && !Number.isNaN(minStock)) {
       query.stock = { ...(query.stock || {}), $gte: minStock };
     }
-    if (!Number.isNaN(maxStock)) {
+    if (maxStock !== undefined && !Number.isNaN(maxStock)) {
       query.stock = { ...(query.stock || {}), $lte: maxStock };
     }
 
@@ -188,6 +193,41 @@ export async function DELETE(req: NextRequest) {
     await product.save();
 
     return apiSuccess({ product: product.toObject() }, "Product deleted successfully");
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    await connectDB();
+
+    const admin = await adminMiddleware(req);
+    if (admin instanceof Response) return admin;
+
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return apiError("Product ID required", 400);
+    }
+
+    const body = await req.json();
+    const isActive = body?.isActive;
+
+    if (typeof isActive !== "boolean") {
+      return apiError("isActive must be a boolean", 400);
+    }
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return apiError("Product not found", 404);
+    }
+
+    product.isActive = isActive;
+    await product.save();
+
+    return apiSuccess({ product: product.toObject() }, "Product status updated");
   } catch (error) {
     return handleError(error);
   }

@@ -7,7 +7,9 @@ import ProductCard from "@/components/shop/ProductCard";
 import { Search, Filter, SlidersHorizontal, PackageOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const CATEGORIES = ["all", "Makhana", "Dry Fruits", "Seeds", "Combos"];
+import { PRODUCT_CATEGORIES } from "@/constants/productCategories";
+
+const CATEGORIES = ["all", ...PRODUCT_CATEGORIES];
 
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -37,7 +39,7 @@ export default function ShopPage() {
       
       if (res.data?.data) {
         setProducts(res.data.data.products);
-        setTotalPages(res.data.data.pagination.totalPages);
+        setTotalPages(res.data.data.pages);
       }
     } catch (error) {
       console.error("Failed to fetch products", error);

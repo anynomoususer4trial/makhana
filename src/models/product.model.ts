@@ -150,8 +150,6 @@ const productSchema = new Schema<IProduct>(
 
 // Indexes for performance
 
-productSchema.index({ slug: 1 });
-
 productSchema.index({ category: 1 });
 
 productSchema.index({ createdAt: -1 });

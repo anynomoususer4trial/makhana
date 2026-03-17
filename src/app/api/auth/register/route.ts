@@ -39,32 +39,27 @@ export async function POST(req: NextRequest) {
       email,
       password: hashedPassword,
       mobile,
-      isVerified: false
+      isVerified: true // Temporarily set to true for testing
 
     });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
-    await Otp.deleteMany({ email });
-
-    await Otp.create({
-
-      email,
-      otp,
-      type: "signup",
-      expiresAt
-
-    });
-
-    await sendOtpEmail(email, otp);
+    // Skip OTP creation and email sending for testing
+    // const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    // await Otp.deleteMany({ email });
+    // await Otp.create({
+    //   email,
+    //   otp,
+    //   type: "signup",
+    //   expiresAt
+    // });
+    // await sendOtpEmail(email, otp);
 
     return apiSuccess(
 
       null,
 
-      "OTP sent to your email"
+      "User registered successfully (testing mode)"
 
     );
 

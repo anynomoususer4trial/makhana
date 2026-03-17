@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
     const limit = Number(searchParams.get("limit")) || 10;
     const search = searchParams.get("search");
     const category = searchParams.get("category");
+    const sort = searchParams.get("sort") || "-createdAt";
 
     const query: any = { isActive: true };
 
@@ -27,16 +28,30 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
 
+    // Parse sort parameter
+    const sortObj: any = {};
+    if (sort.startsWith('-')) {
+      sortObj[sort.substring(1)] = -1;
+    } else {
+      sortObj[sort] = 1;
+    }
+
     const products = await Product.find(query)
-      .sort({ createdAt: -1 })
+      .sort(sortObj)
       .skip(skip)
       .limit(limit)
       .lean();
 
+    // Add inStock field based on stock
+    const productsWithInStock = products.map(product => ({
+      ...product,
+      inStock: product.stock > 0
+    }));
+
     const total = await Product.countDocuments(query);
 
     return apiSuccess({
-      products,
+      products: productsWithInStock,
       total,
       page,
       pages: Math.ceil(total / limit),

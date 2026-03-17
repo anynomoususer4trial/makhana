@@ -38,16 +38,10 @@ export function generateRefreshToken(payload: JwtPayload) {
 
 }
 
-export function verifyToken(token: string) {
-
+export function verifyToken(token: string): JwtPayload | null {
   try {
-
-    return jwt.verify(token, JWT_SECRET);
-
+    return jwt.verify(token, JWT_SECRET) as JwtPayload;
   } catch {
-
     return null;
-
   }
-
 }

@@ -26,67 +26,64 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <motion.div
-      whileHover={{ y: -5 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="group relative bg-white rounded-3xl shadow-sm hover:shadow-2xl hover:shadow-[var(--color-primary)]/10 transition-all duration-300 border border-neutral-100 overflow-hidden flex flex-col h-full"
+      whileHover={{ y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition flex flex-col"
     >
       <Link href={`/shop/${product.slug}`} className="flex flex-col h-full relative cursor-pointer">
-        {/* Badge */}
-        {hasDiscount && (
-          <div className="absolute top-4 left-4 z-10 bg-[var(--color-primary)] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-            SALE
-          </div>
-        )}
-        
-        {/* Image Wrapper */}
-        <div className="relative w-full aspect-square bg-neutral-50 overflow-hidden flex items-center justify-center p-6">
-          <img
+        {/* IMAGE AREA (Dominant) */}
+        <div className="relative bg-[#F7F2EA] h-72 flex items-center justify-center">
+
+          {hasDiscount && (
+            <div className="absolute top-6 left-6 bg-[var(--color-primary)] text-white text-xs px-4 py-1 rounded-full shadow">
+              SALE
+            </div>
+          )}
+
+          <motion.img
             src={product.images && product.images.length > 0 ? product.images[0] : "/makhana-premium1.png"}
             alt={product.name}
-            className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500 will-change-transform"
+            whileHover={{ scale: 1.07 }}
+            transition={{ duration: 0.4 }}
+            className="w-[85%] h-auto object-contain drop-shadow-[0_30px_40px_rgba(0,0,0,0.15)]"
           />
+
+          {/* Subtle Gradient Depth */}
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/5 to-transparent" />
         </div>
 
-        {/* Content */}
-        <div className="p-6 flex flex-col flex-grow">
-          <div className="mb-2">
-            <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">
-              {product.category || "Snacks"}
-            </p>
-            <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">
-              {product.name}
-            </h3>
-          </div>
-          
-          <div className="mt-auto pt-4 flex items-center justify-between">
-            <div className="flex flex-col">
-              {hasDiscount ? (
-                <>
-                  <span className="text-xl font-bold text-[var(--color-primary)]">
-                    ₹{product.discountPrice}
-                  </span>
-                  <span className="text-sm font-medium text-gray-400 line-through">
-                    ₹{product.price}
-                  </span>
-                </>
-              ) : (
-                <span className="text-xl font-bold text-gray-900">
-                  ₹{product.price}
-                </span>
-              )}
-            </div>
+        {/* CONTENT AREA */}
+        <div className="p-8 flex flex-col flex-grow">
 
-            <button
-              onClick={handleAddToCart}
-              type="button"
-              disabled={!product.inStock}
-              className="w-12 h-12 rounded-full bg-neutral-50 hover:bg-[var(--color-primary)] text-gray-700 hover:text-white flex items-center justify-center transition-all shadow-sm hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group/btn"
-              title={product.inStock ? "Add to cart" : "Out of stock"}
-            >
-              <ShoppingCart size={20} className="group-hover/btn:scale-110 transition-transform" />
-            </button>
+          <h3 className="text-xl font-medium text-[var(--heading-color)] mb-2">
+            {product.name}
+          </h3>
+
+          <span className="text-sm text-[var(--color-muted)] mb-6">
+            {product.weight}
+          </span>
+
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-2xl font-semibold text-[var(--heading-color)]">
+              ₹{hasDiscount ? product.discountPrice : product.price}
+            </span>
+
+            {hasDiscount && (
+              <span className="line-through text-[var(--color-muted)]">
+                ₹{product.price}
+              </span>
+            )}
           </div>
+
+          <button
+            onClick={handleAddToCart}
+            disabled={!product.inStock}
+            className="mt-auto w-full flex items-center justify-center gap-2 bg-[var(--color-primary)] text-white py-3 rounded-full hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ShoppingCart size={18} />
+            Add to Cart
+          </button>
+
         </div>
       </Link>
     </motion.div>
