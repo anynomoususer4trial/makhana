@@ -12,7 +12,7 @@ export async function GET() {
       // Create defaults
       config = await Customization.create({
         heroSlides: [
-          { type: "video", src: "/intro.mp4" },
+          { type: "video", src: "/Intro.mp4" },
           { type: "image", src: "/Hero2.jpeg" },
           { type: "image", src: "/Hero3.png" },
           { type: "image", src: "/Hero4.png" },
@@ -25,6 +25,15 @@ export async function GET() {
           twitter: "",
         },
       });
+    } else {
+      // Auto-fix: correct wrong video path (case-sensitive on Vercel/Linux)
+      const needsFix = config.heroSlides?.some((s: any) => s.src === "/intro.mp4");
+      if (needsFix) {
+        config.heroSlides = config.heroSlides.map((s: any) =>
+          s.src === "/intro.mp4" ? { ...s.toObject?.() || s, src: "/Intro.mp4" } : s
+        );
+        await config.save();
+      }
     }
 
     return NextResponse.json({ success: true, data: config }, { status: 200 });

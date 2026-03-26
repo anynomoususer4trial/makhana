@@ -6,7 +6,7 @@ import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 const defaultSlides = [
-  { type: "video", src: "/intro.mp4" },
+  { type: "video", src: "/Intro.mp4" },
   { type: "image", src: "/Hero2.jpeg" },
   { type: "image", src: "/Hero3.png" },
   { type: "image", src: "/Hero4.png" },
