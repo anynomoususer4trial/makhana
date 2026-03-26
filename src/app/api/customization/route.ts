@@ -29,10 +29,12 @@ export async function GET() {
       // Auto-fix: correct wrong video path (case-sensitive on Vercel/Linux)
       const needsFix = config.heroSlides?.some((s: any) => s.src === "/intro.mp4");
       if (needsFix) {
-        config.heroSlides = config.heroSlides.map((s: any) =>
-          s.src === "/intro.mp4" ? { ...s.toObject?.() || s, src: "/Intro.mp4" } : s
-        );
-        await config.save();
+        const fixedSlides = config.heroSlides.map((s: any) => ({
+          type: s.type,
+          src: s.src === "/intro.mp4" ? "/Intro.mp4" : s.src,
+        }));
+        await Customization.updateOne({}, { $set: { heroSlides: fixedSlides } });
+        config = await Customization.findOne();
       }
     }
 
